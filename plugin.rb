@@ -3,7 +3,7 @@
 # about: a plugin that allows you to have a conversation with a configurable chatbot in Discourse Chat, Topics and Private Messages
 # version: 0.21
 # authors: merefield
-# url: https://github.com/merefield/discourse-chatbot
+# url: https://github.com/6doworld/discourse-chatbot
 
 gem "httparty", '0.21.0'
 gem "ruby-openai", '3.7.0', { require: false }
