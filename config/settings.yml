@@ -28,6 +28,9 @@ plugins:
   chatbot_quota_low_trust:
     default: 10
     client: false
+  chatbot_quota_entry_level_trust:
+    default: 5
+    client: false
   chatbot_high_trust_groups:
     client: false
     default: ''
@@ -39,6 +42,11 @@ plugins:
     type: group_list
     list_type: compact
   chatbot_low_trust_groups:
+    client: false
+    default: ''
+    type: group_list
+    list_type: compact
+  chatbot_entry_level_trust_groups:
     client: false
     default: ''
     type: group_list
