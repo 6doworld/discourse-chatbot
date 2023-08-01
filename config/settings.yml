@@ -37,6 +37,11 @@ plugins:
   chatbot_quota_entry_level_trust:
     default: 5
     client: false
+  chatbot_brilliant_access_groups:
+    client: false
+    default: ''
+    type: group_list
+    list_type: compact
   chatbot_high_trust_groups:
     client: false
     default: ''
@@ -72,6 +77,17 @@ plugins:
     client: false
     type: enum
     default: gpt-3.5-turbo
+    choices:
+      - gpt-3.5-turbo
+      - gpt-3.5-turbo-16k
+      - gpt-4
+      - gpt-4-32k
+      - text-davinci-003
+      - text-davinci-002
+  chatbot_brilliant_access_ai_model:
+    client: false
+    type: enum
+    default: gpt-4
     choices:
       - gpt-3.5-turbo
       - gpt-3.5-turbo-16k
