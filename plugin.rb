@@ -8,6 +8,14 @@
 gem "httparty", '0.21.0'
 gem "ruby-openai", '3.7.0', { require: false }
 
+# admin panel     client.<lang>.yml    location
+add_admin_route 'chatbot.admin_title', 'chatbot'
+
+# default plug, see https://meta.discourse.org/t/beginners-guide-to-creating-discourse-plugins-part-5-admin-interfaces/31761
+Discourse::Application.routes.append do
+  get '/admin/plugins/chatbot' => 'admin/plugins#index', constraints: StaffConstraint.new
+end
+
 module ::DiscourseChatbot
   PLUGIN_NAME = "discourse-chatbot"
   POST = "post"
@@ -25,7 +33,8 @@ module ::DiscourseChatbot
   module_function :progress_debug_message
 end
 
-require_relative "lib/discourse_chatbot/engine"
+# require_relative "lib/discourse_chatbot/engine"
+load File.expand_path("lib/discourse_chatbot/engine.rb", __dir__)
 
 enabled_site_setting :chatbot_enabled
 register_asset 'stylesheets/common/chatbot_common.scss'
@@ -57,6 +66,9 @@ after_initialize do
   end
 
   register_user_custom_field_type(::DiscourseChatbot::CHATBOT_QUERIES_CUSTOM_FIELD, :integer)
+
+  # mount routes as a standalone app with "chatbot" prefix, see routes.rb
+  Discourse::Application.routes.append { mount ::DiscourseChatbot::Engine, at: "chatbot" }
 
   DiscourseEvent.on(:post_created) do |*params|
     post, opts, user = params
