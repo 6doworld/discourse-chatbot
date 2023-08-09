@@ -53,7 +53,8 @@ module ::DiscourseChatbot
           original_post_number: post.post_number,
           topic_or_channel_id: topic.id,
           over_quota: over_quota,
-          message_body: post_contents.gsub(bot_username.downcase, '').gsub(bot_username, '')
+          message_body: post_contents.gsub(bot_username.downcase, '').gsub(bot_username, ''),
+          statistics_tracker_id: statistics_tracker(user_id).id
         }
 
         ::DiscourseChatbot.progress_debug_message("3. invocation")

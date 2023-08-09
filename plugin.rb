@@ -90,4 +90,8 @@ after_initialize do
     end
   end
 
+  # 2-side relations for User model
+  reloadable_patch do |plugin|
+    User.prepend ::DiscourseChatbot::UserExtension
+  end
 end

@@ -54,5 +54,11 @@ module ::DiscourseChatbot
       end
     end
 
+    def statistics_tracker(user_id)
+      @_statistics_tracker ||= ::DiscourseChatbot::UsageHistory.create!(
+        user_id: user_id,
+        status: :initialized
+      )
+    end
   end
 end

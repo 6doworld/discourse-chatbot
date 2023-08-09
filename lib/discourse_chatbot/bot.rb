@@ -8,14 +8,16 @@ module ::DiscourseChatbot
       raise "Overwrite me!"
     end
 
-    def get_response(prompt, user = nil)
+    def get_response(prompt, user = nil, statistics_tracker = nil)
       raise "Overwrite me!"
     end
 
     def ask(opts)
       content = opts[:type] == POST ? PostPromptUtils.create_prompt(opts) : MessagePromptUtils.create_prompt(opts)
+      user = asking_user(opts[:user_id])
+      statistics_tracker = opts[:statistics_tracker]
 
-      get_response(content, asking_user(opts[:user_id]))
+      get_response(content, user, statistics_tracker)
     end
 
     private

@@ -18,6 +18,12 @@ class ::Jobs::ChatbotReplyJob < Jobs::Base
   end
 
   def execute(opts)
+    statistics_tracker = ::DiscourseChatbot::UsageHistory.find(
+      opts[:statistics_tracker_id]
+    )
+    statistics_tracker.launched!
+    opts.merge!(statistics_tracker: statistics_tracker)
+
     type = opts[:type]
     bot_user_id = opts[:bot_user_id]
     reply_to_message_or_post_id = opts[:reply_to_message_or_post_id]
@@ -80,5 +86,7 @@ class ::Jobs::ChatbotReplyJob < Jobs::Base
       reply_creator = ::DiscourseChatbot::MessageReplyCreator.new(opts)
     end
     reply_creator.create
+
+    statistics_tracker.sent!
   end
 end

@@ -12,8 +12,10 @@ module ::DiscourseChatbot
       @client = ::OpenAI::Client.new(access_token: SiteSetting.chatbot_open_ai_token)
     end
 
-    def get_response(prompt, user = nil)
+    def get_response(prompt, user = nil, statistics_tracker = nil)
       @user = user
+      @statistics_tracker = statistics_tracker
+
       response = begin
                    if request_type_chat?
                      make_chat_request(prompt)
@@ -28,6 +30,7 @@ module ::DiscourseChatbot
       error = response.parsed_response["error"]
       return handle_error_response(error["message"]) if error.present?
 
+      record_tokens_usage(response)
       if request_type_chat?
         response.dig("choices", 0, "message", "content")
       elsif request_type_completions?
@@ -41,7 +44,18 @@ module ::DiscourseChatbot
 
     private
 
-    attr_reader :client, :user
+    attr_reader :client, :user, :statistics_tracker
+
+    def record_tokens_usage(response)
+      return unless response["choices"].present? || statistics_tracker.present?
+
+      usage = response.dig("usage")
+      statistics_tracker.update(
+        prompt_tokens_consumed: usage.dig("prompt_tokens").to_i,
+        completion_tokens_consumed: usage.dig("completion_tokens").to_i,
+        total_tokens_consumed: usage.dig("total_tokens").to_i
+      )
+    end
 
     def request_type_chat?
       @_request_type_chat ||= begin
@@ -96,6 +110,7 @@ module ::DiscourseChatbot
     def handle_error_response(error_message)
       raise StandardError, error_message
     rescue => e
+      statistics_tracker&.failed!
       Rails.logger.error ("OpenAIBot: There was a problem: #{e}")
       I18n.t('chatbot.errors.general')
     end
