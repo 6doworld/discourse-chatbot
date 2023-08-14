@@ -53,7 +53,8 @@ module ::DiscourseChatbot
       statistics_tracker.update(
         prompt_tokens_consumed: usage.dig("prompt_tokens").to_i,
         completion_tokens_consumed: usage.dig("completion_tokens").to_i,
-        total_tokens_consumed: usage.dig("total_tokens").to_i
+        total_tokens_consumed: usage.dig("total_tokens").to_i,
+        used_ai_model: model_name
       )
     end
 
