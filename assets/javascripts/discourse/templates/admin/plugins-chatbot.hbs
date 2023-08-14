@@ -3,4 +3,16 @@
   <p>Total tokens consumed: {{this.model.total_tokens_consumed}}</p>
   <p>Total bot requests: {{this.model.total_chat_interactions}} </p>
   <p>Total users interacted: {{this.model.total_users_interacted}} </p>
+
+  <p>Top 10 users by amount of messages:</p>
+  {{#each this.model.top_users as |user|}}
+    <LinkTo
+      @route="adminUser.index"
+      @models={{array user.id user.username}}
+    >
+
+    <p>{{user.username}}</p>
+
+    </LinkTo>
+  {{/each}}
 </div>
