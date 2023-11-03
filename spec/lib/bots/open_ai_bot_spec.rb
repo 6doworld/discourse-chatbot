@@ -3,8 +3,41 @@
 require_relative '../../plugin_helper'
 
 describe ::DiscourseChatbot::OpenAIBot do
+  shared_examples "saves tokens usage" do
+    let(:user) { Fabricate(:user) }
+    let(:statistics_tracker) do
+      ::DiscourseChatbot::UsageHistory.new(user: user, status: :initialized)
+    end
+
+    it "saves tokens usage" do
+      subject
+      statistics_tracker.reload
+
+      expect(statistics_tracker.prompt_tokens_consumed).to eq(17)
+      expect(statistics_tracker.completion_tokens_consumed).to eq(17)
+      expect(statistics_tracker.total_tokens_consumed).to eq(34)
+    end
+  end
+
+  shared_examples "does not save tokens usage" do
+    it "does not save tokens usage" do
+      subject
+      expect(::DiscourseChatbot::UsageHistory.count).to eq(0)
+    end
+  end
+
   shared_examples "when request was successful" do
-    let(:bot_response) { OpenStruct.new(parsed_response: {}, choices: choices) }
+    let(:bot_response) do
+      OpenStruct.new(
+        parsed_response: {},
+        choices: choices,
+        usage: {
+          "prompt_tokens" => "17", # dummy value
+          "completion_tokens" => "17", # dummy value
+          "total_tokens" => "34", # dummy value
+        }
+      )
+    end
 
     it { is_expected.to eq 'Foo' }
 
@@ -13,6 +46,8 @@ describe ::DiscourseChatbot::OpenAIBot do
       subject
       expect(openai_bot.send(:model_name)).to eq model_name
     end
+
+    it_behaves_like "saves tokens usage"
   end
 
   shared_examples "when request ended up with error" do
@@ -33,14 +68,17 @@ describe ::DiscourseChatbot::OpenAIBot do
       subject
       expect(openai_bot.send(:model_name)).to eq model_name
     end
+
+    it_behaves_like "does not save tokens usage"
   end
 
   let(:openai_bot) { ::DiscourseChatbot::OpenAIBot.new }
 
   describe "#get_response" do
-    subject { openai_bot.get_response("User prompt", user) }
+    subject { openai_bot.get_response("User prompt", user, statistics_tracker) }
 
     let(:user) { nil }
+    let(:statistics_tracker) { nil }
     let(:choices) do
       [
         {

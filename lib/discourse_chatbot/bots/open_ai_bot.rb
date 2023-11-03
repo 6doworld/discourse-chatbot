@@ -47,7 +47,7 @@ module ::DiscourseChatbot
     attr_reader :client, :user, :statistics_tracker
 
     def record_tokens_usage(response)
-      return unless response["choices"].present? || statistics_tracker.present?
+      return unless (response["choices"].present? && statistics_tracker.present?)
 
       usage = response.dig("usage")
       statistics_tracker.update(
