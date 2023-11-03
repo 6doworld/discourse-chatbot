@@ -6,10 +6,7 @@
 # url: https://github.com/6doworld/discourse-chatbot
 
 gem "httparty", '0.21.0'
-gem 'multipart-post', '2.3.0', require: false # added
-gem 'faraday-multipart', '1.0.4', require: false # added
-gem 'ruby-openai', '5.1.0', require: false # added
-# gem "ruby-openai", '3.7.0', { require: false } # omitted
+gem "ruby-openai", '3.7.0', { require: false }
 
 # admin panel     client.<lang>.yml    location
 add_admin_route 'chatbot.admin_title', 'chatbot'
